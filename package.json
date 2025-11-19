@@ -1,0 +1,40 @@
+{
+  "name": "robot-admin-git-log",
+  "version": "1.0.0",
+  "description": "A beautiful git log formatter with auto pagination and colored output",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "git-lg": "./bin/git-lg.js",
+    "git-lg-install": "./install.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install-global": "node install.js",
+    "postinstall": "node postinstall.js"
+  },
+  "keywords": [
+    "git",
+    "log",
+    "formatter",
+    "cli",
+    "color",
+    "pagination"
+  ],
+  "author": "ChenYu",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.6.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ChenyCHENYU/robot-admin-git-log"
+  },
+  "bugs": {
+    "url": "https://github.com/ChenyCHENYU/robot-admin-git-log/issues"
+  },
+  "homepage": "https://github.com/ChenyCHENYU/robot-admin-git-log#readme"
+}
