@@ -1,6 +1,6 @@
 {
   "name": "git-log-formatter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A beautiful git log formatter with auto pagination and colored output",
   "main": "index.js",
   "type": "module",
