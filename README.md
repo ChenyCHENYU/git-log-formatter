@@ -1,4 +1,4 @@
-# Robot Admin Git Log Formatter
+# Git Log Formatter
 
 一个美观的git日志格式化工具，提供彩色输出和智能分页功能。
 
@@ -19,9 +19,17 @@
 在您的项目中添加为开发依赖：
 
 ```bash
-npm install --save-dev robot-admin-git-log
-# 或使用 bun
-bun add --dev robot-admin-git-log
+# npm
+npm install --save-dev git-log-formatter
+
+# pnpm
+pnpm add -D git-log-formatter
+
+# yarn
+yarn add -D git-log-formatter
+
+# bun
+bun add -d git-log-formatter
 ```
 
 安装时会自动配置 `git lg` 命令，无需手动设置！
@@ -29,24 +37,34 @@ bun add --dev robot-admin-git-log
 ### 方法二：一键安装
 
 ```bash
-npx robot-admin-git-log install
+npx git-log-formatter install
 ```
 
 这会自动在您的全局 `.gitconfig` 文件中添加所需的别名。
 
-### 方法三：手动安装
+### 方法三：手动全局安装
 
-1. 安装包：
+1. 全局安装包：
 
 ```bash
-npm install -g robot-admin-git-log
+# npm
+npm install -g git-log-formatter
+
+# pnpm
+pnpm add -g git-log-formatter
+
+# yarn
+yarn global add git-log-formatter
+
+# bun
+bun add -g git-log-formatter
 ```
 
 2. 在全局 `.gitconfig` 文件中添加别名：
 
 ```ini
 [alias]
-    lg = "!f() { npx robot-admin-git-log \"$@\"; }; f"
+    lg = "!f() { npx git-log-formatter \"$@\"; }; f"
 ```
 
 ## 使用方法
@@ -102,7 +120,7 @@ git lg --all --grep="feat"      # 在所有分支中搜索包含"feat"的提交
 ```json
 {
   "devDependencies": {
-    "robot-admin-git-log": "^1.0.0"
+    "git-log-formatter": "^1.0.0"
   }
 }
 ```
@@ -114,7 +132,7 @@ git lg --all --grep="feat"      # 在所有分支中搜索包含"feat"的提交
 团队成员只需运行以下命令即可完成安装：
 
 ```bash
-npx robot-admin-git-log install
+npx git-log-formatter install
 ```
 
 无需手动配置任何文件，安装脚本会自动处理所有配置。

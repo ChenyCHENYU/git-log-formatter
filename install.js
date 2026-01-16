@@ -71,22 +71,23 @@ try {
   }
 }
 
-// 添加别名配置
-let aliasSection = "\n[alias]\n";
-if (gitConfigContent.includes("[alias]")) {
-  // 如果已经存在 [alias] 部分，只需要添加 lg 别名
-  aliasSection = "\n    ";
-} else {
-  // 如果不存在 [alias] 部分，需要添加整个部分
-  gitConfigContent += "\n[alias]";
-}
-
-// 添加 lg 别名，使用动态路径
-const lgAlias = `lg = "!f() { node \\"${path.join(
+// 添加 lg 别名，使用动态路径（Windows路径需要转换为正斜杠）
+const scriptPath = path.join(
   npmRoot,
-  "robot-admin-git-log/bin/git-lg.js"
-)}\\" \\"$@\\"; }; f"`;
-gitConfigContent += aliasSection + lgAlias + "\n";
+  "git-log-formatter/bin/git-lg.js"
+).replace(/\\/g, '/');
+const lgAlias = `lg = "!f() { node \\"${scriptPath}\\" \\"$@\\"; }; f"`;
+
+if (gitConfigContent.includes("[alias]")) {
+  // 如果已经存在 [alias] 部分，插入到 [alias] 部分之后
+  gitConfigContent = gitConfigContent.replace(
+    /\[alias\]/,
+    `[alias]\n    ${lgAlias}`
+  );
+} else {
+  // 如果不存在 [alias] 部分，添加整个部分
+  gitConfigContent += `\n[alias]\n    ${lgAlias}\n`;
+}
 
 // 写入更新后的配置
 fs.writeFileSync(gitConfigPath, gitConfigContent);

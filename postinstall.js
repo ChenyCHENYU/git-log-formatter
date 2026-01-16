@@ -14,6 +14,11 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { execSync } from "child_process";
+import { fileURLToPath } from "url";
+
+// 获取当前脚本所在目录（ES module 中的 __dirname 替代）
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // 获取用户主目录
 const homeDir = os.homedir();
@@ -25,17 +30,13 @@ const isProjectInstall = fs.existsSync(projectPackageJsonPath);
 
 if (!isProjectInstall) {
   // 如果不是项目安装，显示使用说明
-  console.log("🎨 Robot Admin Git Log Formatter 已安装！");
+  console.log("🎨 Git Log Formatter 已安装！");
   console.log("\n📝 使用方法：");
-  console.log(
-    "  npx robot-admin-git-log              # 显示所有提交，自动分页"
-  );
-  console.log("  npx robot-admin-git-log -5           # 显示最近5个提交");
-  console.log("  npx robot-admin-git-log --oneline    # 使用简洁格式");
-  console.log('  npx robot-admin-git-log --grep="fix" # 搜索包含"fix"的提交');
-  console.log(
-    "\n💡 提示：运行 npx robot-admin-git-log install 可配置 git 别名"
-  );
+  console.log("  npx git-log-formatter              # 显示所有提交，自动分页");
+  console.log("  npx git-log-formatter -5           # 显示最近5个提交");
+  console.log("  npx git-log-formatter --oneline    # 使用简洁格式");
+  console.log('  npx git-log-formatter --grep="fix" # 搜索包含"fix"的提交');
+  console.log("\n💡 提示：运行 npx git-log-formatter install 可配置 git 别名");
   process.exit(0);
 }
 
@@ -71,38 +72,24 @@ if (gitConfigContent.includes("[alias]") && gitConfigContent.includes("lg =")) {
   gitConfigContent = gitConfigContent.replace(/^\s*lg\s*=\s*"[^"]*".*$/gm, "");
 }
 
-// 使用 npm root 获取全局 node_modules 路径
-let npmRoot;
-try {
-  npmRoot = execSync("npm root -g", { encoding: "utf8" }).trim();
-} catch {
-  // 如果 npm root 失败，尝试使用 bun
-  try {
-    npmRoot = execSync("bun pm -g bin", { encoding: "utf8" })
-      .split("\n")[0]
-      .replace("bun pm bin", "")
-      .trim();
-  } catch {
-    npmRoot = path.join(homeDir, "node_modules");
-  }
-}
+// 确定包的安装路径
+// 使用当前脚本的实际位置（postinstall.js 在包的根目录）
+const packagePath = __dirname;
 
-// 添加别名配置
-let aliasSection = "\n[alias]\n";
+// 添加 lg 别名，使用动态路径（Windows路径需要转换为正斜杠）
+const scriptPath = path.join(packagePath, "bin/git-lg.js").replace(/\\/g, "/");
+const lgAlias = `lg = "!f() { node \\"${scriptPath}\\" \\"$@\\"; }; f"`;
+
 if (gitConfigContent.includes("[alias]")) {
-  // 如果已经存在 [alias] 部分，只需要添加 lg 别名
-  aliasSection = "\n    ";
+  // 如果已经存在 [alias] 部分，插入到 [alias] 部分之后
+  gitConfigContent = gitConfigContent.replace(
+    /\[alias\]/,
+    `[alias]\n    ${lgAlias}`
+  );
 } else {
-  // 如果不存在 [alias] 部分，需要添加整个部分
-  gitConfigContent += "\n[alias]";
+  // 如果不存在 [alias] 部分，添加整个部分
+  gitConfigContent += `\n[alias]\n    ${lgAlias}\n`;
 }
-
-// 添加 lg 别名，使用动态路径
-const lgAlias = `lg = "!f() { node \\"${path.join(
-  npmRoot,
-  "robot-admin-git-log/bin/git-lg.js"
-)}\\" \\"$@\\"; }; f"`;
-gitConfigContent += aliasSection + lgAlias + "\n";
 
 // 写入更新后的配置
 fs.writeFileSync(gitConfigPath, gitConfigContent);

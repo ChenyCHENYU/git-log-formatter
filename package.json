@@ -1,5 +1,5 @@
 {
-  "name": "robot-admin-git-log",
+  "name": "git-log-formatter",
   "version": "1.0.0",
   "description": "A beautiful git log formatter with auto pagination and colored output",
   "main": "index.js",
@@ -31,10 +31,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ChenyCHENYU/robot-admin-git-log"
+    "url": "https://github.com/ChenyCHENYU/git-log-formatter"
   },
   "bugs": {
-    "url": "https://github.com/ChenyCHENYU/robot-admin-git-log/issues"
+    "url": "https://github.com/ChenyCHENYU/git-log-formatter/issues"
   },
-  "homepage": "https://github.com/ChenyCHENYU/robot-admin-git-log#readme"
+  "homepage": "https://github.com/ChenyCHENYU/git-log-formatter#readme"
 }
