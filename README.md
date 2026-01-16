@@ -14,35 +14,48 @@
 
 ## 安装
 
-### 方法一：项目依赖安装（推荐，无感安装）
-
-在您的项目中添加为开发依赖：
+全局安装后自动配置 `git lg` 命令：
 
 ```bash
-# npm
+npm install -g git-log-formatter
+```
+
+就这么简单！安装完成后在任何 Git 仓库中都可以使用 `git lg`。
+
+<details>
+<summary>使用其他包管理器？点击展开</summary>
+
+### pnpm
+
+pnpm v10+ 默认阻止执行安装脚本（安全策略），需要允许：
+
+```bash
+pnpm add -g git-log-formatter --allow-build=git-log-formatter
+```
+
+### yarn / bun
+
+```bash
+yarn global add git-log-formatter
+bun add -g git-log-formatter
+```
+
+</details>
+
+### 本地安装（无需配置）
+
+如果只想在项目中临时使用，无需全局安装：
+
+```bash
+# 添加到项目依赖
 npm install --save-dev git-log-formatter
 
-# pnpm
-pnpm add -D git-log-formatter
-
-# yarn
-yarn add -D git-log-formatter
-
-# bun
-bun add -d git-log-formatter
+# 使用 npx 调用
+npx git-log-formatter -10
+npx git-log-formatter --grep="fix"
 ```
 
-安装时会自动配置 `git lg` 命令，无需手动设置！
-
-### 方法二：一键安装
-
-```bash
-npx git-log-formatter install
-```
-
-这会自动在您的全局 `.gitconfig` 文件中添加所需的别名。
-
-### 方法三：手动全局安装
+> **注意**：本地安装无法使用 `git lg` 快捷命令，需使用 `npx git-log-formatter`。
 
 1. 全局安装包：
 
@@ -113,29 +126,13 @@ git lg --all --grep="feat"      # 在所有分支中搜索包含"feat"的提交
 
 ## 团队使用
 
-### 项目集成方式（推荐）
-
-在项目的 `package.json` 中添加依赖：
-
-```json
-{
-  "devDependencies": {
-    "git-log-formatter": "^1.0.0"
-  }
-}
-```
-
-团队成员安装项目依赖时会自动获得 `git lg` 命令，无需额外配置！
-
-### 全局安装方式
-
-团队成员只需运行以下命令即可完成安装：
+推荐在团队文档中统一安装命令：
 
 ```bash
-npx git-log-formatter install
+npm install -g git-log-formatter
 ```
 
-无需手动配置任何文件，安装脚本会自动处理所有配置。
+简单、可靠、零配置。
 
 ## 分页说明
 

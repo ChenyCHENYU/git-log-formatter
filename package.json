@@ -5,12 +5,9 @@
   "main": "index.js",
   "type": "module",
   "bin": {
-    "git-lg": "./bin/git-lg.js",
-    "git-lg-install": "./install.js"
+    "git-lg": "./bin/git-lg.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "install-global": "node install.js",
     "postinstall": "node postinstall.js"
   },
   "keywords": [
