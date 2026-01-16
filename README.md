@@ -17,13 +17,16 @@
 全局安装后自动配置 `git lg` 命令：
 
 ```bash
+# 零配置，自动执行（推荐）
 npm install -g git-log-formatter
+yarn global add git-log-formatter
+bun add -g git-log-formatter
 ```
 
 就这么简单！安装完成后在任何 Git 仓库中都可以使用 `git lg`。
 
 <details>
-<summary>使用其他包管理器？点击展开</summary>
+<summary>使用 pnpm？点击展开</summary>
 
 ### pnpm
 
@@ -31,13 +34,6 @@ pnpm v10+ 默认阻止执行安装脚本（安全策略），需要允许：
 
 ```bash
 pnpm add -g git-log-formatter --allow-build=git-log-formatter
-```
-
-### yarn / bun
-
-```bash
-yarn global add git-log-formatter
-bun add -g git-log-formatter
 ```
 
 </details>
@@ -126,13 +122,15 @@ git lg --all --grep="feat"      # 在所有分支中搜索包含"feat"的提交
 
 ## 团队使用
 
-推荐在团队文档中统一安装命令：
+推荐在团队文档中统一安装命令（任选一个）：
 
 ```bash
 npm install -g git-log-formatter
+yarn global add git-log-formatter
+bun add -g git-log-formatter
 ```
 
-简单、可靠、零配置。
+简单、可靠、零配置。如果团队使用 pnpm，参考上面的说明。
 
 ## 分页说明
 
