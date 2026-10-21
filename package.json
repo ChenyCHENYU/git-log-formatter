@@ -1,8 +1,7 @@
 {
   "name": "git-log-formatter",
-  "version": "1.0.2",
-  "description": "A beautiful git log formatter with auto pagination and colored output",
-  "main": "index.js",
+  "version": "1.0.3",
+  "description": "彩色 git log 格式化工具 - 自动分页，全局安装自动配置 git lg 别名",
   "type": "module",
   "bin": {
     "git-lg": "./bin/git-lg.js"
@@ -13,10 +12,12 @@
   "keywords": [
     "git",
     "log",
-    "formatter",
-    "cli",
+    "format",
     "color",
-    "pagination"
+    "pager",
+    "cli",
+    "git-lg",
+    "developer-experience"
   ],
   "author": "ChenYu",
   "license": "MIT",
@@ -24,14 +25,22 @@
     "chalk": "^5.6.2"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ChenyCHENYU/git-log-formatter"
+    "url": "git+https://github.com/ChenyCHENYU/git-log-formatter.git"
   },
   "bugs": {
     "url": "https://github.com/ChenyCHENYU/git-log-formatter/issues"
   },
-  "homepage": "https://github.com/ChenyCHENYU/git-log-formatter#readme"
+  "homepage": "https://github.com/ChenyCHENYU/git-log-formatter#readme",
+  "files": [
+    "bin",
+    "install.js",
+    "postinstall.js",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ]
 }
