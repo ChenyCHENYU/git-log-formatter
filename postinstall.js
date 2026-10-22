@@ -1,13 +1,10 @@
 #!/usr/bin/env node
 
-import fs from "fs";
-import os from "os";
 import path from "path";
-import { execSync } from "child_process";
+import { execFileSync, execSync } from "child_process";
 import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // 检测是否为全局安装
 function isGlobalInstall() {
@@ -28,10 +25,10 @@ function isGlobalInstall() {
   }
 }
 
-// 本地安装提示
+// 本地安装只提示，不写任何配置
 if (!isGlobalInstall()) {
   console.log("📦 Git Log Formatter 已安装到项目中");
-  console.log("\n💡 使用方法：npx git-log-formatter");
+  console.log("\n💡 使用方法：npx git-lg");
   console.log("\n✨ 如需全局 `git lg` 命令，请全局安装：");
   console.log("  npm install -g git-log-formatter");
   console.log(
@@ -40,75 +37,67 @@ if (!isGlobalInstall()) {
   process.exit(0);
 }
 
-// 全局安装：自动配置 git alias
-const homeDir = os.homedir();
-const gitConfigPath = path.join(homeDir, ".gitconfig");
+// CI 环境不写用户配置
+if (process.env.CI) {
+  console.log("🤖 检测到 CI 环境，跳过 git lg 别名配置");
+  process.exit(0);
+}
 
 console.log("🚀 正在配置全局 git lg 命令...\n");
 
-// 检查 .gitconfig 文件是否存在
-if (!fs.existsSync(gitConfigPath)) {
-  console.log("❌ 未找到 .gitconfig 文件");
-  console.log("请先配置 Git：");
-  console.log('  git config --global user.name "您的名字"');
-  console.log('  git config --global user.email "您的邮箱"');
-  process.exit(1);
-}
+const scriptPath = path.join(__dirname, "bin/git-lg.js").replace(/\\/g, "/");
+const lgAlias = `!f() { node "${scriptPath}" "$@"; }; f`;
 
-// 读取现有的 .gitconfig 文件
-let gitConfigContent = fs.readFileSync(gitConfigPath, "utf8");
+// 一律通过 `git config --global` 读写：execFileSync 数组传参不经 shell 无需转义，
+// 无引号旧别名、~/.gitconfig 与 XDG（~/.config/git/config）路径、重复项清理由 git 正确处理
+const run = (args) => execFileSync("git", args, { encoding: "utf8" });
+const read = (key) => {
+  try {
+    return run(["config", "--global", "--get", key]).trim();
+  } catch {
+    return null;
+  }
+};
 
-// 检查是否已经存在 lg 别名
-if (gitConfigContent.includes("[alias]") && gitConfigContent.includes("lg =")) {
-  console.log("⚠️ 检测到已存在 git-lg 别名");
+try {
+  const existing = read("alias.lg");
 
-  // 提取现有别名显示给用户
-  const lgMatch = gitConfigContent.match(/^\s*lg\s*=\s*"([^"]+)"/m);
-  if (lgMatch) {
-    console.log("📝 现有别名:", lgMatch[0].trim());
+  if (existing === lgAlias) {
+    console.log("✅ 别名已指向当前安装，无需重复配置");
+  } else {
+    // 指向本包其他路径（nvm 切版本、npm↔pnpm 重装）时直接切换，不当作用户别名备份
+    const isOtherSelfInstall =
+      existing && existing.includes("git-log-formatter");
+
+    if (existing && !isOtherSelfInstall) {
+      console.log(`⚠️ 检测到已有 lg 别名：${existing}`);
+      if (!read("alias.lg-backup")) {
+        run(["config", "--global", "--replace-all", "alias.lg-backup", existing]);
+        console.log("💾 原别名已备份为 lg-backup（git config --global --get alias.lg-backup 可查看）");
+      }
+      console.log("🔄 覆盖为 git-log-formatter");
+    }
+    // --replace-all 同时清理早期版本文本替换 bug 可能残留的重复 lg 别名
+    run(["config", "--global", "--replace-all", "alias.lg", lgAlias]);
   }
 
-  // 原别名备份为 lg-backup（仅首次，避免反复安装时覆盖备份）
-  if (!/lg-backup\s*=/.test(gitConfigContent)) {
-    gitConfigContent = gitConfigContent.replace(
-      /^(\s*)lg\s*=\s*"([^"]+)".*$/gm,
-      "$1lg-backup = \"$2\""
-    );
-    console.log("💾 原别名已备份为 lg-backup（在 ~/.gitconfig 中可随时恢复）");
+  // 写入后读回校验，避免静默失败
+  const applied = read("alias.lg");
+  if (applied !== lgAlias) {
+    throw new Error(`写入后校验失败，当前值为：${applied}`);
   }
 
-  console.log("🔄 覆盖现有 lg 别名为 git-log-formatter");
-
-  // 移除现有的 lg 别名（备份已保留）
-  gitConfigContent = gitConfigContent.replace(/^\s*lg\s*=\s*"[^"]*".*$/gm, "");
-}
-
-// 确定包的安装路径
-// 使用当前脚本的实际位置（postinstall.js 在包的根目录）
-const packagePath = __dirname;
-
-// 添加 lg 别名，使用动态路径（Windows路径需要转换为正斜杠）
-const scriptPath = path.join(packagePath, "bin/git-lg.js").replace(/\\/g, "/");
-const lgAlias = `lg = "!f() { node \\"${scriptPath}\\" \\"$@\\"; }; f"`;
-
-if (gitConfigContent.includes("[alias]")) {
-  // 如果已经存在 [alias] 部分，插入到 [alias] 部分之后
-  gitConfigContent = gitConfigContent.replace(
-    /\[alias\]/,
-    `[alias]\n    ${lgAlias}`
+  console.log("✅ 全局 git lg 命令配置成功！");
+} catch (error) {
+  console.log("❌ 别名配置失败：", String(error.message).split("\n")[0]);
+  console.log("可手动执行：");
+  console.log(
+    `  git config --global alias.lg '!f() { node "${scriptPath}" "$@"; }; f'`
   );
-} else {
-  // 如果不存在 [alias] 部分，添加整个部分
-  gitConfigContent += `\n[alias]\n    ${lgAlias}\n`;
 }
 
-// 写入更新后的配置
-fs.writeFileSync(gitConfigPath, gitConfigContent);
-
-console.log("✅ 全局 git lg 命令配置成功！");
 console.log("\n📝 现在可以在任何 Git 仓库中使用：");
 console.log("  git lg              # 显示所有提交，自动分页");
-console.log("  git lg -5           # 显示最近5个提交");
-console.log("  git lg --oneline    # 使用简洁格式");
-console.log('  git lg --grep="fix" # 搜索包含"fix"的提交');
-console.log("\n🎨 享受彩色的 git log 吧！");
+console.log("  git lg -5           # 显示最近 5 个提交");
+console.log("  git lg --oneline    # 简洁格式，同样上色");
+console.log('  git lg --grep="fix" # 搜索提交，结果超一屏自动分页');
