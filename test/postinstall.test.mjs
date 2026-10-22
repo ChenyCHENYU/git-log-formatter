@@ -24,6 +24,9 @@ function baseEnv(home) {
     HOME: home,
     // postinstall 内部用 git config --global，隔离系统级配置
     GIT_CONFIG_SYSTEM: os.devnull,
+    // 外层 CI=true（GitHub Actions）不应触发被测 postinstall 的跳过分支；
+    // 跳过行为由"CI 环境跳过别名配置"用例显式覆盖
+    CI: '',
   }
 }
 
