@@ -2,7 +2,7 @@
 
 <img src="./docs/assets/banner.svg" alt="git-log-formatter" width="100%" />
 
-**一眼看懂的 git log** —— 彩色格式化 + 智能分页
+**一眼看懂的 git log** —— 彩色格式化 · 智能相对时间 · 类型分色 · 自动分页
 
 [![npm version](https://img.shields.io/npm/v/git-log-formatter?style=flat-square&color=818CF8&labelColor=0B1020)](https://www.npmjs.com/package/git-log-formatter)
 [![npm downloads](https://img.shields.io/npm/dm/git-log-formatter?style=flat-square&color=22D3EE&labelColor=0B1020)](https://www.npmjs.com/package/git-log-formatter)
@@ -16,12 +16,12 @@
 
 ## 它解决什么问题
 
-`git log` 默认输出信息密度低：哈希、日期、作者、描述挤在一起没有层次，提交类型（feat / fix / refactor）完全不可见。
+`git log` 默认输出信息密度低：哈希、日期、作者、描述挤在一起没有层次，提交类型（feat / fix / refactor）完全不可见，`HEAD` 在哪个分支也看不到。
 
-git-log-formatter 把每条提交渲染成一行彩色结构化输出，哈希、时间、**提交类型**、描述、作者各归其位；输出超过一屏时自动进入 `less` 分页，短输出直接打印。
+git-log-formatter 把每条提交渲染成一行彩色结构化输出：哈希、**智能相对时间**、按语义分色的**提交类型**、描述、作者、`HEAD`/分支/tag 各归其位；输出超过一屏时自动分页，短输出直接打印。
 
 ```
-a1b2c3d - 2026-10-21 10:30:45 【feat】 订单导出支持异步任务 [CHENY]
+a1b2c3d - 3小时前      【feat】 订单导出支持异步任务 [CHENY] (HEAD -> main)
 ```
 
 ## 安装
@@ -107,7 +107,7 @@ a1b2c3d - 3小时前      【feat】 订单导出支持异步任务 [CHENY] (HEA
 <details>
 <summary><b>Windows 支持吗？</b></summary>
 
-支持。颜色按 Windows 终端兼容级别输出；分页依赖系统 `less`，不可用时自动降级为直接打印。
+支持，CI 在 ubuntu / macOS / Windows 三平台跑全量测试。Windows Terminal 与 VS Code 终端原生支持 ANSI 颜色；分页器按 `GIT_PAGER` > `core.pager` > `PAGER` > `less` 解析，系统没有 `less` 时自动降级为直接打印。
 
 </details>
 
