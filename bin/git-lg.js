@@ -20,20 +20,18 @@ const gitLogArgs = [
 ]
 
 // 检查是否需要使用分页器
-const shouldUsePager =
-  !args.includes('--oneline') &&
-  !args.includes('-1') &&
-  !args.includes('--grep') &&
-  !args.includes('-n') &&
-  !args.includes('--max-count') &&
-  !args.includes('-5') &&
-  !args.includes('--since') &&
-  !args.includes('--after') &&
-  !args.includes('--until') &&
-  !args.includes('--before') &&
-  !args.includes('--stat') &&
-  !args.includes('--patch') &&
-  !args.includes('-p')
+// 短输出场景不进分页：数字简写（-5/-10）、带值形式（--grep=xx / -n 5）同样识别，
+// 旧实现只硬编码了 '-5' 一个数字形式、漏掉所有 --xxx=yy 等号写法
+const SHORT_OUTPUT_FLAGS = [
+  '--oneline', '-1', '--grep', '--max-count', '-n',
+  '--since', '--after', '--until', '--before',
+  '--stat', '--patch', '-p', '-S', '-G',
+]
+const isShortOutput =
+  SHORT_OUTPUT_FLAGS.some(
+    (flag) => args.includes(flag) || args.some((a) => a.startsWith(flag + '='))
+  ) || args.some((a) => /^-\d+$/.test(a))
+const shouldUsePager = !isShortOutput
 
 try {
   // 获取git log输出
