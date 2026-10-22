@@ -63,14 +63,23 @@ if (gitConfigContent.includes("[alias]") && gitConfigContent.includes("lg =")) {
   console.log("⚠️ 检测到已存在 git-lg 别名");
 
   // 提取现有别名显示给用户
-  const lgMatch = gitConfigContent.match(/lg\s*=\s*"([^"]+)"/);
+  const lgMatch = gitConfigContent.match(/^\s*lg\s*=\s*"([^"]+)"/m);
   if (lgMatch) {
-    console.log("📝 现有别名:", lgMatch[0]);
+    console.log("📝 现有别名:", lgMatch[0].trim());
   }
 
-  console.log("🔄 自动覆盖现有别名");
+  // 原别名备份为 lg-backup（仅首次，避免反复安装时覆盖备份）
+  if (!/lg-backup\s*=/.test(gitConfigContent)) {
+    gitConfigContent = gitConfigContent.replace(
+      /^(\s*)lg\s*=\s*"([^"]+)".*$/gm,
+      "$1lg-backup = \"$2\""
+    );
+    console.log("💾 原别名已备份为 lg-backup（在 ~/.gitconfig 中可随时恢复）");
+  }
 
-  // 移除现有的 lg 别名（更安全的正则表达式）
+  console.log("🔄 覆盖现有 lg 别名为 git-log-formatter");
+
+  // 移除现有的 lg 别名（备份已保留）
   gitConfigContent = gitConfigContent.replace(/^\s*lg\s*=\s*"[^"]*".*$/gm, "");
 }
 

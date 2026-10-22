@@ -1,6 +1,6 @@
 {
   "name": "git-log-formatter",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "彩色 git log 格式化工具 - 自动分页，全局安装自动配置 git lg 别名",
   "type": "module",
   "bin": {
@@ -37,7 +37,6 @@
   "homepage": "https://github.com/ChenyCHENYU/git-log-formatter#readme",
   "files": [
     "bin",
-    "install.js",
     "postinstall.js",
     "docs",
     "README.md",

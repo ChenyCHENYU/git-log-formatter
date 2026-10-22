@@ -1,23 +1,23 @@
 #!/usr/bin/env node
 
-import { execSync } from 'child_process'
+import { execFileSync } from 'child_process'
 import chalk from 'chalk'
 
 // 确保颜色在Windows终端中正确显示
 chalk.level = 1
 
-// 获取命令行参数
+// 获取命令行参数（argv 已按 shell 规则切分，数组直传 git，无注入与转义问题）
 const args = process.argv.slice(2)
 
-// 构建 git log 命令，保留用户传递的参数
+// 构建 git log 参数，保留用户传递的参数
 // 不添加任何默认限制，让 git log 自己决定默认行为
-let gitLogCommand =
-  'git log --color=never --pretty=format:"%h|%ad|%s|%an" --date=format:"%Y-%m-%d %H:%M:%S"'
-
-// 如果用户提供了参数，将其添加到git log命令中
-if (args.length > 0) {
-  gitLogCommand += ' ' + args.join(' ')
-}
+const gitLogArgs = [
+  'log',
+  '--color=never',
+  '--pretty=format:%h|%ad|%s|%an',
+  '--date=format:%Y-%m-%d %H:%M:%S',
+  ...args,
+]
 
 // 检查是否需要使用分页器
 const shouldUsePager =
@@ -37,7 +37,7 @@ const shouldUsePager =
 
 try {
   // 获取git log输出
-  const gitLog = execSync(gitLogCommand, { encoding: 'utf8' })
+  const gitLog = execFileSync('git', gitLogArgs, { encoding: 'utf8' })
 
   // 检查是否使用了 --oneline 或其他简化格式
   const isOnelineFormat = args.includes('--oneline') || args.includes('-1')
