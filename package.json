@@ -8,7 +8,7 @@
   },
   "scripts": {
     "postinstall": "node postinstall.js",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/line-format.test.mjs test/pager.test.mjs test/cli.test.mjs test/postinstall.test.mjs"
   },
   "keywords": [
     "git",
