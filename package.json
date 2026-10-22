@@ -1,6 +1,6 @@
 {
   "name": "git-log-formatter",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "彩色 git log 格式化工具 - 自动分页，全局安装自动配置 git lg 别名",
   "type": "module",
   "bin": {

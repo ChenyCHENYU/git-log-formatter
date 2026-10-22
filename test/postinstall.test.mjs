@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
 import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
+import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -22,7 +23,7 @@ function baseEnv(home) {
     ...process.env,
     HOME: home,
     // postinstall 内部用 git config --global，隔离系统级配置
-    GIT_CONFIG_SYSTEM: '/dev/null',
+    GIT_CONFIG_SYSTEM: os.devnull,
   }
 }
 
